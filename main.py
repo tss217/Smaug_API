@@ -36,3 +36,8 @@ def root():
 def stock(stock:str):
     st  = Stock(stock)
     return st.get_Stock_Current_Price_json()
+
+@app.get("/stockinfo")
+def info(stock:str):
+    st = Stock(stock)
+    return st.get_Basic_information_stock_Json()
