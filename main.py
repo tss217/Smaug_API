@@ -15,7 +15,7 @@ class Stock:
         basicData ={"Symbol":self._stock.info.get("symbol"),"Sector":self._stock.info.get("sector"),"industry":self._stock.info.get("industry")}
         return basicData
 
-    def get_Basic_information_stock_Json(self)->dict:
+    def get_Basic_information_stock_Json(self)->str:
         return self.__set_Basic_Information()
     
     def __set_Stock_Current_Price(self)->dict:
@@ -37,7 +37,7 @@ def stock(stock:str):
     st  = Stock(stock)
     return st.get_Stock_Current_Price_json()
 
-@app.get("/stockinfo")
+@app.get("/infostock")
 def info(stock:str):
     st = Stock(stock)
     return st.get_Basic_information_stock_Json()
