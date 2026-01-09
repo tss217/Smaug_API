@@ -1,1 +1,1 @@
-# Smaug_API
+# smaugAPI
