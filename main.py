@@ -12,7 +12,7 @@ class Stock:
         self._stock = yf.Ticker(ticker)
 
     def __set_Basic_Information(self)->dict:
-        basicData ={"Symbol":self._stock.info["symbol"],"Sector":self._stock.info["sector"],"industry":self._stock.info["industry"]}
+        basicData ={"Symbol":self._stock.info.get("symbol"),"Sector":self._stock.info.get("sector"),"industry":self._stock.info.get("industry")}
         return basicData
 
     def get_Basic_information_stock_Json(self)->dict:
