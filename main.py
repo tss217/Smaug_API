@@ -3,13 +3,11 @@
 import yfinance as yf
 from fastapi import FastAPI
 
-dat = yf.Ticker("BBAS3.SA")
-
-
 class Stock:
+
     def __init__(self,ticker:str):
-        self._ticker = ticker
-        self._stock = yf.Ticker(ticker)
+        self._ticker = ticker.upper()+".SA"
+        self._stock = yf.Ticker(self._ticker)
 
     def __set_Basic_Information(self)->dict:
         basicData ={"Symbol":self._stock.info.get("symbol"),"Sector":self._stock.info.get("sector"),"industry":self._stock.info.get("industry")}
@@ -24,6 +22,9 @@ class Stock:
     
     def get_Stock_Current_Price_json(self)->str:
         return self.__set_Stock_Current_Price()
+    
+    def get_history_month(self) -> list[float]:
+       return self._stock.history(period="max")["Close"].tolist()
 
     
 app = FastAPI(title="Smaug")
@@ -34,10 +35,12 @@ def root():
     
 @app.get("/stock")
 def stock(stock:str):
-    st  = Stock(stock)
-    return st.get_Stock_Current_Price_json()
+   return Stock(stock).get_Stock_Current_Price_json()
 
 @app.get("/infostock")
 def info(stock:str):
-    st = Stock(stock)
-    return st.get_Basic_information_stock_Json()
+        return Stock(stock).get_Basic_information_stock_Json()
+
+@app.get("/maxHistory")
+def mouth(stock:str):
+    return (Stock(stock).get_history_month())
