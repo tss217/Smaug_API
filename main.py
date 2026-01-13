@@ -25,6 +25,12 @@ class Stock:
     
     def get_history_month(self) -> list[float]:
        return self._stock.history(period="max")["Close"].tolist()
+    
+    def get_history(self) -> dict:
+       df = self._stock.history(period="max")
+       df = df.reset_index()[["Date","Close"]]
+       return df.to_dict(orient="records")
+
 
     
 app = FastAPI(title="Smaug")
@@ -43,4 +49,4 @@ def info(stock:str):
 
 @app.get("/maxHistory")
 def mouth(stock:str):
-    return (Stock(stock).get_history_month())
+    return (Stock(stock).get_history())
