@@ -27,59 +27,27 @@ class Stock:
     
     def get_Stock_Current_Price_json(self)->str:
         return self.__set_Stock_Current_Price()
-    
-    def get_history_month(self) -> list[float]:
-       df = self._stock.history(period="max")
-       df = df.reset_index()[["Date","Close"]]
-       return df.to_dict(orient="records")
 
-class StatisticStock(Stock):
-    def __init__(self, ticker):
+class HistoryStock(Stock):
+    def __init__(self, ticker,period):
         super().__init__(ticker)
 
-        self._PL = None
-        self._DY = None
-        self._ROE = None
-        self._margemBruta = None
-        self._dividaLiquidaEbitda = None 
+        self._period = period
+        self._VALID_PERIOD = {"1d", "5d", "1mo", "3mo", "6mo","1y", "2y", "5y", "10y", "ytd", "max"}
 
-        self._set_PL
-        self._set_DY
-        self._set_ROE
-        self._set_divida_Liquida_eitda
+    def get_period(self):
+        if self._period not in self._VALID_PERIOD:
+            return "periodo invalido"
+        return self._period
 
-    @property
-    def _set_PL(self)->None:
-        self._PL = self.get_key_information("trailingPE")
-
-    @property
-    def _set_DY(self)->None:
-        self._DY = self.get_key_information("dividendYield")
-
-    @property
-    def _set_ROE(self):
-        self._ROE = self.get_key_information("returnOnEquity")*100
-
-    @property
-    def _set_margem_bruta (self):
-        self._margemBruta = self.get_key_information("grossMargins")*100
-
-    @property
-    def _set_debt(self):
-        return self.get_key_information("totalDebt")
+    def get_history(self):
+        df = self._stock.history(period=self.get_period())
+        df = df.reset_index()[["Date","Close"]]
+        return df.to_dict(orient="records")
     
-    @property
-    def _set_total_cash(self):
-        return self.get_key_information("totalCash")
-    
-    @property
-    def _set_ebitda(self):
-        return self.get_key_information("ebitda")
+class Currency():
+    pass
 
-    @property
-    def _set_divida_Liquida_eitda(self):
-        self._dividaLiquidaEbitda = (self._set_debt - self._set_total_cash) / self._set_ebitda
-    
 
 app = FastAPI(title="Smaug")
 
@@ -95,10 +63,7 @@ def stock(stock:str):
 def info(stock:str):
         return Stock(stock).get_Basic_information_stock_Json()
 
-@app.get("/mouth")
-def mouth(stock:str):
-    return (Stock(stock).get_history_month())
-
-@app.get("/test")
-def testUrl(stock:str):
-    return Stock(stock).set_key_information("dividendYield")
+@app.get("/history/{stock}/{period}")
+def mouth(stock:str,period:str):
+    his = HistoryStock(stock,period)
+    return his.get_history()
